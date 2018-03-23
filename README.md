@@ -7,15 +7,15 @@ VM program that translates virtual machine (stack architecture) commands to asse
 # VM memory mapping
 
 | RAM index  | Segment                  |
-|-----------:|:------------------------:|
+|-----------:|:-------------------------|
 |          0 | SP  - Stack pointer      |
 |          1 | LCL - Local              |
 |          2 | ARG - Arguments          |
-|          3 | THIS -                   |
-|          4 | THAT -                   |
-|   5 -   12 | temp segment             |
-|  13 -   15 | general purpose registers|
-|  16 -  255 | static variables         |
+|          3 | THIS                     |
+|          4 | THAT                     |
+|   5 -   12 | Temp segment             |
+|  13 -   15 | General purpose registers|
+|  16 -  255 | Static variables         |
 | 256 - 2047 | Stack                    |
 
 # Implementation
