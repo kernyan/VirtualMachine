@@ -1,0 +1,18 @@
+#ifndef VIRTUALMACHINE_VM_COMMANDS_H_
+#define VIRTUALMACHINE_VM_COMMANDS_H_
+
+enum class command_type
+{
+  C_UNDEFINED,
+  C_ARITHMETIC,
+  C_PUSH,
+  C_POP,
+  C_LABEL,
+  C_GOTO,
+  C_IF,
+  C_FUNCTION,
+  C_RETURN,
+  C_CALL
+};
+
+#endif // VIRTUALMACHINE_VM_COMMANDS_H_
