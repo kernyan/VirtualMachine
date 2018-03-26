@@ -3,13 +3,36 @@
 #include <fstream>
 #include <sstream>
 
-void AssemblyWriter::process_tokens(const VMParser &Parser)
+void AssemblyWriter::process_tokens(const ParsedData &data)
 {
-  for (int i = 0; i < 2; ++i) {
-    std::stringstream line;
-    line << "Testing " << i << std::endl;
-    assembly_strings.push_back(line.str());
+  switch (data.command) {
+  case command_type::C_ARITHMETIC: do_arithmetic(data); break;
+  case command_type::C_PUSH: do_push(data); break;
+  case command_type::C_POP: do_pop(data); break;
+  case command_type::C_COMMENT: do_comment(data); break;
+  default:
+    std::cerr << "VM Command Type not yet implemented.\n"; break;
   }
+}
+
+void AssemblyWriter::do_arithmetic(const ParsedData &data)
+{
+  std::stringstream ss;
+  ss << "push\n";
+  assembly_strings.push_back(ss.str());
+}
+
+void AssemblyWriter::do_push(const ParsedData &data)
+{
+}
+
+void AssemblyWriter::do_pop(const ParsedData &data)
+{
+}
+
+void AssemblyWriter::do_comment(const ParsedData &data)
+{
+  assembly_strings.push_back(data.comment);
 }
 
 void AssemblyWriter::write_tofile(const string &FileName)

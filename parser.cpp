@@ -1,52 +1,75 @@
 #include "parser.h"
+#include "utils.h"
 #include <vector>
 #include <iostream>
 
 using std::vector;
 
-void VMParser::operator()(string &LineAsString)
+void VMParser::set_line(const string &LineAsString)
 {
-  line = LineAsString;
-  size_t pos = line.find("//");
-  if (pos < line.size()) {
-    comment = line.substr(pos, line.size());
-    line.replace(pos, line.size(), "");
+  data.line = LineAsString;
+}
+
+void VMParser::remove_comment()
+{
+  size_t pos = data.line.find("//");
+  if (pos < data.line.size()) {
+    string Comment = data.line.substr(pos, data.line.size());
+    data.comment = replace_string_to_end(Comment, 1, "\n"); // replace ^M with \n
+    data.line.replace(pos, data.line.size(), "");
   }
-  vector<string> vs;
-  if (!line.empty()) {
+}
+
+void VMParser::store_tokens(vector<string> &vs)
+{
+  if (!data.line.empty()) {
     while (true) {
-      size_t pos = line.find(" ");
-      if (pos < line.size()) {
-        vs.push_back(line.substr(size_t (0), pos));
-        line.replace(size_t (0), pos + 1, "");
-      } else if (line.size() > 1) {
-        vs.push_back(line.substr(size_t (0), line.size() - 1));
+      size_t pos = data.line.find(" ");
+      if (pos < data.line.size()) {
+        vs.push_back(data.line.substr(size_t (0), pos));
+        data.line.replace(size_t (0), pos + 1, "");
+      } else if (data.line.size() > 1) {
+        // last entry in string is '\r' character
+        vs.push_back(data.line.substr(size_t (0), data.line.size() - 1));
         break;
       } else {
         break;
       }
     }
   }
+}
+
+void VMParser::populate_vmcommands(vector<string> &vs)
+{
   switch (vs.size()) {
-  case 0: break;
-  case 1: command = command_type::C_ARITHMETIC; break;
+  case 0: data.command = command_type::C_COMMENT; break;
+  case 1: data.command = command_type::C_ARITHMETIC; break;
   case 2: std::cerr << "Unexpected VM command with only two arguments encountered\n" << vs[1]
           << std::endl; break;
   case 3:
     {
       if (vs[0] == "push")
-        command = command_type::C_PUSH;
+        data.command = command_type::C_PUSH;
       else if (vs[0] == "pop")
-        command = command_type::C_POP;
+        data.command = command_type::C_POP;
       else
         std::cerr <<  "Unexpected memory command encountered\n" << vs[0] << std::endl;
 
-      arg1 = vs[1];
-      arg2 = std::stoi(vs[2]);
+      data.arg1 = vs[1];
+      data.arg2 = std::stoi(vs[2]);
       break;
     }
   default:
     std::cerr << "Unexpected VM command with more than 3 arguments encountered\n" << vs[3]
       << std::endl; break;
   }
+}
+
+void VMParser::operator()(const string &LineAsString)
+{
+  set_line(LineAsString);
+  remove_comment();
+  vector<string> vs;
+  store_tokens(vs);
+  populate_vmcommands(vs);
 }

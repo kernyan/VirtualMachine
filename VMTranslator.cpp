@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
   if (in_file) {
     VMParser parser;
     AssemblyWriter writer;
-    string out_file_name = infer_output_name(argv[1]);
+    string out_file_name = replace_string_to_end(argv[1], 3, ".asm");
     string line;
     while (std::getline(in_file, line)) {
       parser(line);
-      writer.process_tokens(parser);
+      writer.process_tokens(parser.get_parsed_data());
       writer.write_tofile(out_file_name);
     }
   } else {

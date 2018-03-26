@@ -4,6 +4,7 @@
 enum class command_type
 {
   C_UNDEFINED,
+  C_COMMENT,
   C_ARITHMETIC,
   C_PUSH,
   C_POP,
