@@ -3,6 +3,11 @@
 #include <fstream>
 #include <sstream>
 
+void AssemblyWriter::add_line(const string &line)
+{
+  assembly_strings.push_back(line);
+}
+
 void AssemblyWriter::process_tokens(const ParsedData &data)
 {
   switch (data.command) {
@@ -17,13 +22,39 @@ void AssemblyWriter::process_tokens(const ParsedData &data)
 
 void AssemblyWriter::do_arithmetic(const ParsedData &data)
 {
-  std::stringstream ss;
-  ss << "push\n";
-  assembly_strings.push_back(ss.str());
+  add_line("//ADD\n");
+  add_line("@SP\n");
+  add_line("AM=M-1\n");
+  add_line("D=M\n");
+  add_line("A=A-1\n");
+  add_line("M=D+M\n");
 }
 
 void AssemblyWriter::do_push(const ParsedData &data)
 {
+  string TempRegister;
+  if (data.arg1 == "local") {
+    TempRegister = "LCL";
+  } else if (data.arg1 == "argument") {
+    TempRegister = "ARG";
+  } else if (data.arg1 == "this") {
+    TempRegister = "THIS";
+  } else if (data.arg1 == "that") {
+    TempRegister = "THAT";
+  } else if (data.arg1 == "constant") {
+    TempRegister = std::to_string(data.arg2);
+  } else {
+   std::cerr << "Register segment not yet implemented.\n";
+  }
+
+  add_line("//push " + data.arg1 + " " + std::to_string(data.arg2) + "\n");
+  add_line("@" + TempRegister + "\n");
+  add_line("D=A\n");
+  add_line("@SP\n");
+  add_line("A=M\n");
+  add_line("M=D\n");
+  add_line("@SP\n");
+  add_line("M=M+1\n");
 }
 
 void AssemblyWriter::do_pop(const ParsedData &data)

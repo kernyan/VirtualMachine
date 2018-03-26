@@ -12,15 +12,16 @@ struct ParsedData ; // forward declaration
 class AssemblyWriter
 {
   vector<string> assembly_strings;
+  void do_arithmetic(const ParsedData &data);
+  void do_push(const ParsedData &data);
+  void do_pop(const ParsedData &data);
+  void do_comment(const ParsedData &data);
+  void add_line(const string &line);
 
   public:
   AssemblyWriter () {};
   void process_tokens(const ParsedData &data);
   void write_tofile(const string &FileName);
-  void do_arithmetic(const ParsedData &data);
-  void do_push(const ParsedData &data);
-  void do_pop(const ParsedData &data);
-  void do_comment(const ParsedData &data);
 };
 
 #endif // VIRTUALMACHINE_ASSEMBLY_WRITER_H_
