@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <vector>
 #include <iostream>
+#include <limits>
 
 using std::vector;
 
@@ -42,8 +43,12 @@ void VMParser::store_tokens(vector<string> &vs)
 void VMParser::populate_vmcommands(vector<string> &vs)
 {
   switch (vs.size()) {
-  case 0: data.command = command_type::C_COMMENT; break;
-  case 1: data.command = command_type::C_ARITHMETIC; break;
+  case 0: data.command = command_type::C_COMMENT; 
+          break;
+  case 1: data.command = command_type::C_ARITHMETIC;
+          data.arg1 = vs[0];
+          data.arg2 = std::numeric_limits<int>::min(); // invalid number
+          break;
   case 2: std::cerr << "Unexpected VM command with only two arguments encountered\n" << vs[1]
           << std::endl; break;
   case 3:
