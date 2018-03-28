@@ -28,6 +28,7 @@ class AssemblyWriter
   void alu_or(const ParsedData &data);
   void alu_not(const ParsedData &data);
   string get_jump_name(const string &s);
+  string get_segment_name(const ParsedData &data);
 
   public:
   AssemblyWriter ();

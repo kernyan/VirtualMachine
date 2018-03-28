@@ -91,6 +91,7 @@ void AssemblyWriter::alu_eq(const ParsedData &data)
 {
   string jump_name = get_jump_name("eq");
   add_line("//EQ");
+  add_line("@SP");
   add_line("AM=M-1");
   add_line("D=M");
   add_line("A=A-1");
@@ -105,27 +106,64 @@ void AssemblyWriter::alu_eq(const ParsedData &data)
 
 void AssemblyWriter::alu_gt(const ParsedData &data)
 {
+  string jump_name = get_jump_name("gt");
   add_line("//GT");
+  add_line("@SP");
+  add_line("AM=M-1");
+  add_line("D=M");
+  add_line("A=A-1");
+  add_line("M=M-D");
+  add_line("D=0");
+  add_line("@" + jump_name);
+  add_line("M; JGT");
+  add_line("D=1");
+  add_line("(" + jump_name + ")");
+  add_line("M=D");
 }
 
 void AssemblyWriter::alu_lt(const ParsedData &data)
 {
+  string jump_name = get_jump_name("lt");
   add_line("//LT");
+  add_line("@SP");
+  add_line("AM=M-1");
+  add_line("D=M");
+  add_line("A=A-1");
+  add_line("M=M-D");
+  add_line("D=0");
+  add_line("@" + jump_name);
+  add_line("M; JLT");
+  add_line("D=1");
+  add_line("(" + jump_name + ")");
+  add_line("M=D");
 }
 
 void AssemblyWriter::alu_and(const ParsedData &data)
 {
   add_line("//AND");
+  add_line("@SP");
+  add_line("AM=M-1");
+  add_line("D=M");
+  add_line("A=A-1");
+  add_line("M=D&M");
 }
 
 void AssemblyWriter::alu_or(const ParsedData &data)
 {
   add_line("//OR");
+  add_line("@SP");
+  add_line("AM=M-1");
+  add_line("D=M");
+  add_line("A=A-1");
+  add_line("M=D|M");
 }
 
 void AssemblyWriter::alu_not(const ParsedData &data)
 {
   add_line("//NOT");
+  add_line("@SP");
+  add_line("A=M-1");
+  add_line("M=!M");
 }
 
 void AssemblyWriter::do_arithmetic(const ParsedData &data)
@@ -146,35 +184,48 @@ void AssemblyWriter::do_arithmetic(const ParsedData &data)
   }
 }
 
-void AssemblyWriter::do_push(const ParsedData &data)
+string AssemblyWriter::get_segment_name(const ParsedData &data)
 {
-  string TempRegister;
   if (data.arg1 == "local") {
-    TempRegister = "LCL";
+    return "LCL";
   } else if (data.arg1 == "argument") {
-    TempRegister = "ARG";
+    return "ARG";
   } else if (data.arg1 == "this") {
-    TempRegister = "THIS";
+    return "THIS";
   } else if (data.arg1 == "that") {
-    TempRegister = "THAT";
+    return "THAT";
   } else if (data.arg1 == "constant") {
-    TempRegister = std::to_string(data.arg2);
+    return std::to_string(data.arg2);
   } else {
    std::cerr << "Register segment not yet implemented.\n";
+   return "";
   }
+}
 
+void AssemblyWriter::do_push(const ParsedData &data)
+{
+  string TempRegister = get_segment_name(data);
   add_line("//push " + data.arg1 + " " + std::to_string(data.arg2) + "");
   add_line("@" + TempRegister);
-  add_line("D=A");
-  add_line("@SP");
-  add_line("A=M");
-  add_line("M=D");
+  add_line("AM=M-1");
+  add_line("D=M");
   add_line("@SP");
   add_line("M=M+1");
+  add_line("A=M-1");
+  add_line("M=D");
 }
 
 void AssemblyWriter::do_pop(const ParsedData &data)
 {
+  string TempRegister = get_segment_name(data);
+  add_line("//pop " + data.arg1 + " " + std::to_string(data.arg2) + "");
+  add_line("@SP");
+  add_line("AM=M-1");
+  add_line("D=M");
+  add_line("@" + TempRegister);
+  add_line("M=M+1");
+  add_line("A=M-1");
+  add_line("M=D");
 }
 
 void AssemblyWriter::do_comment(const ParsedData &data)
