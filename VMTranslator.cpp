@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
 {
   std::ifstream in_file(argv[1]);
   if (in_file) {
-    VMParser parser;
+    string FileName = replace_string_to_end(argv[1], 3, ""); // remove .vm extension
+    VMParser parser(FileName);
     AssemblyWriter writer;
     string out_file_name = replace_string_to_end(argv[1], 3, ".asm");
     string line;
