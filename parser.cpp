@@ -6,6 +6,11 @@
 
 using std::vector;
 
+VMParser::VMParser(const string &FileName)
+{
+  data.filename = FileName;
+}
+
 void VMParser::set_line(const string &LineAsString)
 {
   data.line = LineAsString;

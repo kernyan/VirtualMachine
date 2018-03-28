@@ -51,6 +51,19 @@ alu_commands AssemblyWriter::string_to_alu_type(const string &s)
     return alu_commands::A_UNDEFINED;
 }
 
+bool AssemblyWriter::segment_need_offset(const string &s)
+{
+  if (  s == "local"
+     || s == "argument"
+     || s == "this"
+     || s == "that"
+     || s == "temp"
+     || s == "pointer")
+    return true;
+  else
+    return false;
+}
+
 string AssemblyWriter::get_jump_name(const string &s)
 {
   int jump_index = arithmetic_jumps[int (string_to_alu_type(s))]++; 
@@ -196,35 +209,71 @@ string AssemblyWriter::get_segment_name(const ParsedData &data)
     return "THAT";
   } else if (data.arg1 == "constant") {
     return std::to_string(data.arg2);
+  } else if (data.arg1 == "static") {
+    return (data.filename + "." + std::to_string(data.arg2));
+  } else if (data.arg1 == "temp") {
+    return "R5";
+  } else if (data.arg1 == "pointer") {
+    return "R3";
   } else {
    std::cerr << "Register segment not yet implemented.\n";
    return "";
   }
 }
 
-void AssemblyWriter::do_push(const ParsedData &data)
+void AssemblyWriter::add_lines_segment_position(const ParsedData &data)
 {
-  string TempRegister = get_segment_name(data);
-  add_line("//push " + data.arg1 + " " + std::to_string(data.arg2) + "");
-  add_line("@" + TempRegister);
-  add_line("AM=M-1");
-  add_line("D=M");
+  if (segment_need_offset(data.arg1)) {
+    add_line("@" + get_segment_name(data));
+    add_line("D=M");
+    add_line("@" + std::to_string(data.arg2));
+    add_line("A=D+M");
+  } else {
+    add_line("@" + get_segment_name(data));
+  }
+}
+
+void AssemblyWriter::add_lines_push_sp()
+{
   add_line("@SP");
   add_line("M=M+1");
   add_line("A=M-1");
+}
+
+void AssemblyWriter::add_lines_pop_sp()
+{
+  add_line("@SP");
+  add_line("AM=M-1");
+}
+
+void AssemblyWriter::do_push(const ParsedData &data)
+{
+  add_line("//push " + data.arg1 + " " + std::to_string(data.arg2) + "");
+  add_lines_segment_position(data);
+  add_line("D=M");
+  add_lines_push_sp();
   add_line("M=D");
 }
 
 void AssemblyWriter::do_pop(const ParsedData &data)
 {
-  string TempRegister = get_segment_name(data);
   add_line("//pop " + data.arg1 + " " + std::to_string(data.arg2) + "");
-  add_line("@SP");
-  add_line("AM=M-1");
+  if (segment_need_offset(data.arg1)) {
+    add_lines_segment_position(data);
+    add_line("D=A");
+    add_line("@SegAdd");
+    add_line("M=D");
+  }
+  add_lines_pop_sp();
   add_line("D=M");
-  add_line("@" + TempRegister);
-  add_line("M=M+1");
-  add_line("A=M-1");
+  if (segment_need_offset(data.arg1)) {
+    add_line("@SegAdd");
+    add_line("A=M");
+  } else if (data.arg1 == "static") {
+    add_lines_segment_position(data);
+  } else {
+    std::cerr << "Pop of " << data.arg1 << " encountered\n";
+  }
   add_line("M=D");
 }
 

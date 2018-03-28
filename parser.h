@@ -12,6 +12,7 @@ struct ParsedData
   string line;
   string arg1;
   string comment;
+  string filename;
   int arg2;
   command_type command;
   ParsedData ()
@@ -27,7 +28,7 @@ class VMParser
   void populate_vmcommands(vector<string> &vs);
   
   public:
-  VMParser () {};
+  explicit VMParser (const string &FileName);
   void operator()(const string &LineAsString);
   inline ParsedData get_parsed_data();
 };

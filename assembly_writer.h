@@ -29,12 +29,16 @@ class AssemblyWriter
   void alu_not(const ParsedData &data);
   string get_jump_name(const string &s);
   string get_segment_name(const ParsedData &data);
+  void add_lines_segment_position(const ParsedData &data);
+  void add_lines_push_sp();
+  void add_lines_pop_sp();
 
   public:
   AssemblyWriter ();
   void process_tokens(const ParsedData &data);
   void write_tofile(const string &FileName);
   static alu_commands string_to_alu_type(const string &s);
+  static bool segment_need_offset(const string &s);
 };
 
 #endif // VIRTUALMACHINE_ASSEMBLY_WRITER_H_
