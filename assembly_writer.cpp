@@ -224,10 +224,15 @@ string AssemblyWriter::get_segment_name(const ParsedData &data)
 void AssemblyWriter::add_lines_segment_position(const ParsedData &data)
 {
   if (segment_need_offset(data.arg1)) {
-    add_line("@" + get_segment_name(data));
-    add_line("D=M");
-    add_line("@" + std::to_string(data.arg2));
-    add_line("A=D+M");
+    if (data.arg2 == 0) {
+      add_line("@" + get_segment_name(data));
+      add_line("A=M");
+    } else {
+      add_line("@" + get_segment_name(data));
+      add_line("D=M");
+      add_line("@" + std::to_string(data.arg2));
+      add_line("A=D+M");
+    }
   } else {
     add_line("@" + get_segment_name(data));
   }
