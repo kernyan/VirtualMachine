@@ -9,6 +9,8 @@ using std::vector;
 VMParser::VMParser(const string &FileName)
 {
   data.filename = FileName;
+  size_t found = FileName.find_last_of("/");
+  data.file = FileName.substr(found + 1);
 }
 
 void VMParser::set_line(const string &LineAsString)

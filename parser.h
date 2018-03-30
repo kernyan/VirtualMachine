@@ -13,6 +13,7 @@ struct ParsedData
   string arg1;
   string comment;
   string filename;
+  string file;
   int arg2;
   command_type command;
   ParsedData ()

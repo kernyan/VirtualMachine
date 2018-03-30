@@ -210,7 +210,7 @@ string AssemblyWriter::get_segment_name(const ParsedData &data)
   } else if (data.arg1 == "constant") {
     return std::to_string(data.arg2);
   } else if (data.arg1 == "static") {
-    return (data.filename + "." + std::to_string(data.arg2));
+    return (data.file + "." + std::to_string(data.arg2));
   } else if (data.arg1 == "temp") {
     return "R" + std::to_string(5 + data.arg2);
   } else if (data.arg1 == "pointer") {
