@@ -56,9 +56,9 @@ bool AssemblyWriter::segment_need_offset(const string &s)
   if (  s == "local"
      || s == "argument"
      || s == "this"
-     || s == "that"
-     || s == "temp"
-     || s == "pointer")
+     || s == "that")
+     //|| s == "temp"
+     //|| s == "pointer")
     return true;
   else
     return false;
@@ -212,9 +212,9 @@ string AssemblyWriter::get_segment_name(const ParsedData &data)
   } else if (data.arg1 == "static") {
     return (data.filename + "." + std::to_string(data.arg2));
   } else if (data.arg1 == "temp") {
-    return "R5";
+    return "R" + std::to_string(5 + data.arg2);
   } else if (data.arg1 == "pointer") {
-    return "R3";
+    return "R" + std::to_string(3 + data.arg2);
   } else {
    std::cerr << "Register segment not yet implemented.\n";
    return "";
@@ -231,7 +231,7 @@ void AssemblyWriter::add_lines_segment_position(const ParsedData &data)
       add_line("@" + get_segment_name(data));
       add_line("D=M");
       add_line("@" + std::to_string(data.arg2));
-      add_line("A=D+M");
+      add_line("A=D+A");
     }
   } else {
     add_line("@" + get_segment_name(data));
@@ -255,7 +255,10 @@ void AssemblyWriter::do_push(const ParsedData &data)
 {
   add_line("//push " + data.arg1 + " " + std::to_string(data.arg2) + "");
   add_lines_segment_position(data);
-  add_line("D=M");
+  if (data.arg1 == "constant")
+    add_line("D=A");
+  else
+    add_line("D=M");
   add_lines_push_sp();
   add_line("M=D");
 }
@@ -274,7 +277,9 @@ void AssemblyWriter::do_pop(const ParsedData &data)
   if (segment_need_offset(data.arg1)) {
     add_line("@SegAdd");
     add_line("A=M");
-  } else if (data.arg1 == "static") {
+  } else if (  data.arg1 == "static"
+            || data.arg1 == "temp"
+            || data.arg1 == "pointer") {
     add_lines_segment_position(data);
   } else {
     std::cerr << "Pop of " << data.arg1 << " encountered\n";
