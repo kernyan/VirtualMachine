@@ -6,7 +6,8 @@
 
 using std::vector;
 
-VMParser::VMParser(const string &FileName)
+VMParser::VMParser(const string &FileName) :
+  compile_local (false)
 {
   data.filename = FileName;
   size_t found = FileName.find_last_of("/");
@@ -16,6 +17,7 @@ VMParser::VMParser(const string &FileName)
 void VMParser::set_line(const string &LineAsString)
 {
   data.line = LineAsString;
+  std::cout << data.line << std::endl;
 }
 
 void VMParser::remove_comment()
@@ -31,14 +33,17 @@ void VMParser::remove_comment()
 void VMParser::store_tokens(vector<string> &vs)
 {
   if (!data.line.empty()) {
+    int offset = 0;
+    if (compile_local)
+      offset = 1;
     while (true) {
       size_t pos = data.line.find(" ");
       if (pos < data.line.size()) {
         vs.push_back(data.line.substr(size_t (0), pos));
         data.line.replace(size_t (0), pos + 1, "");
-      } else if (data.line.size() > 1) {
+      } else if (data.line.size() > offset) {
         // last entry in string is '\r' character
-        vs.push_back(data.line.substr(size_t (0), data.line.size() - 1));
+        vs.push_back(data.line.substr(size_t (0), data.line.size() - offset));
         break;
       } else {
         break;
@@ -56,7 +61,7 @@ void VMParser::populate_vmcommands(vector<string> &vs)
           data.arg1 = vs[0];
           data.arg2 = std::numeric_limits<int>::min(); // invalid number
           break;
-  case 2: std::cerr << "Unexpected VM command with only two arguments encountered\n" << vs[1]
+  case 2: std::cerr << "Unexpected VM command with only two arguments encountered\n" << vs[0] << vs[1] << std::endl << data.line
           << std::endl; break;
   case 3:
     {
@@ -68,6 +73,7 @@ void VMParser::populate_vmcommands(vector<string> &vs)
         std::cerr <<  "Unexpected memory command encountered\n" << vs[0] << std::endl;
 
       data.arg1 = vs[1];
+      std::cout << "Stoi argument: " << vs[2] << std::endl;
       data.arg2 = std::stoi(vs[2]);
       break;
     }
