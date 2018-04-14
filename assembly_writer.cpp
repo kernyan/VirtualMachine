@@ -110,45 +110,29 @@ void AssemblyWriter::alu_eq(const ParsedData &data)
   add_line("D=M-D");
   add_line("@" + jump_name);
   add_line("D; JEQ");
-  add_line("D=-1");
-  add_line("(" + jump_name + ")");
-  add_line("D=D+1");
-  add_lines_push_sp();
-  add_line("M=D");
-
-  /*
-  add_line("@SP");
-  add_line("AM=M-1");
-  add_line("D=M");
-  add_line("A=A-1");
-  add_line("D=M-D");
-  add_line("@TempAdd");
-  add_line("M=D");
-  add_line("D=0");
-  add_line("@" + jump_name);
-  add_line("M; JEQ");
   add_line("D=1");
   add_line("(" + jump_name + ")");
-  add_line("@SP");
-  add_line("A=M-1");
+  add_line("D=D-1");
+  add_lines_push_sp();
   add_line("M=D");
-  */
 }
 
 void AssemblyWriter::alu_gt(const ParsedData &data)
 {
   string jump_name = get_jump_name("gt");
   add_line("//GT");
-  add_line("@SP");
-  add_line("AM=M-1");
+  add_lines_pop_sp();
   add_line("D=M");
-  add_line("A=A-1");
-  add_line("M=M-D");
-  add_line("D=0");
+  add_lines_pop_sp();
+  add_line("D=M-D");
   add_line("@" + jump_name);
+  add_line("M=D");
+  add_line("D=0");
   add_line("M; JGT");
   add_line("D=1");
   add_line("(" + jump_name + ")");
+  add_line("D=D-1");
+  add_lines_push_sp();
   add_line("M=D");
 }
 
@@ -156,16 +140,18 @@ void AssemblyWriter::alu_lt(const ParsedData &data)
 {
   string jump_name = get_jump_name("lt");
   add_line("//LT");
-  add_line("@SP");
-  add_line("AM=M-1");
+  add_lines_pop_sp();
   add_line("D=M");
-  add_line("A=A-1");
-  add_line("M=M-D");
-  add_line("D=0");
+  add_lines_pop_sp();
+  add_line("D=M-D");
   add_line("@" + jump_name);
+  add_line("M=D");
+  add_line("D=0");
   add_line("M; JLT");
   add_line("D=1");
   add_line("(" + jump_name + ")");
+  add_line("D=D-1");
+  add_lines_push_sp();
   add_line("M=D");
 }
 
