@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   if (in_file) {
     string FileName = replace_string_to_end(argv[1], 3, ""); // remove .vm extension
     VMParser parser(FileName);
-    if (argv[2] == std::string("-l"))
+    if (argv[2] && argv[2] == std::string("-l"))
       parser.set_local_flag(); 
     AssemblyWriter writer;
     string out_file_name = replace_string_to_end(argv[1], 3, ".asm");

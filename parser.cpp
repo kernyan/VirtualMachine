@@ -17,7 +17,6 @@ VMParser::VMParser(const string &FileName) :
 void VMParser::set_line(const string &LineAsString)
 {
   data.line = LineAsString;
-  std::cout << data.line << std::endl;
 }
 
 void VMParser::remove_comment()
@@ -33,7 +32,7 @@ void VMParser::remove_comment()
 void VMParser::store_tokens(vector<string> &vs)
 {
   if (!data.line.empty()) {
-    int offset = 0;
+    size_t offset = 0;
     if (compile_local)
       offset = 1;
     while (true) {
@@ -73,7 +72,6 @@ void VMParser::populate_vmcommands(vector<string> &vs)
         std::cerr <<  "Unexpected memory command encountered\n" << vs[0] << std::endl;
 
       data.arg1 = vs[1];
-      std::cout << "Stoi argument: " << vs[2] << std::endl;
       data.arg2 = std::stoi(vs[2]);
       break;
     }
