@@ -13,3 +13,20 @@ string replace_string_to_end(const string &InString, int pos, const string &Appe
   return outString.replace(outString.end() - pos,
       outString.end(), Append);
 }
+
+bool is_arithmetic(const string &s)
+{
+  if (s == "add"
+    || s == "sub"
+    || s == "neg"
+    || s == "eq"
+    || s == "gt"
+    || s == "lt"
+    || s == "and"
+    || s == "or"
+    || s == "not") {
+    return true;
+  } else {
+    return false;
+  }
+}

@@ -21,7 +21,11 @@ void AssemblyWriter::process_tokens(const ParsedData &data)
   case command_type::C_PUSH: do_push(data); break;
   case command_type::C_POP: do_pop(data); break;
   case command_type::C_COMMENT: do_comment(data); break;
+  case command_type::C_LABEL: do_label(data); break;
+  case command_type::C_GOTO: do_goto(data); break;
+  case command_type::C_IF: do_if(data); break;
   default:
+    std::cout << "command_type: " << data.arg1 << std::endl;
     std::cerr << "VM Command Type not yet implemented.\n"; break;
   }
 }
@@ -46,9 +50,10 @@ alu_commands AssemblyWriter::string_to_alu_type(const string &s)
     return A_OR;
   else if (s == "not")
     return A_NOT;
-  else
+  else {
     std::cerr << "Unexpected alu_command encountered in string_to_alu\n";
     return alu_commands::A_UNDEFINED;
+  }
 }
 
 bool AssemblyWriter::segment_need_offset(const string &s)

@@ -22,12 +22,14 @@ struct ParsedData
 
 class VMParser
 {
+  private:
   ParsedData data;
   bool compile_local; // local unix machine has trailing /r character
   void set_line(const string &LineAsString);
   void remove_comment();
   void store_tokens(vector<string> &vs);
   void populate_vmcommands(vector<string> &vs);
+  bool find_token(size_t start, size_t &i, size_t &j);
   
   public:
   VMParser() = delete;
@@ -37,6 +39,8 @@ class VMParser
   void set_local_flag() {
     compile_local = true;
   }
+  static bool find_token(const string &s,
+      size_t start, size_t &i, size_t &j);
 };
 
 inline ParsedData VMParser::get_parsed_data()
