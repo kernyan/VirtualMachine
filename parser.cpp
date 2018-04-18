@@ -37,27 +37,27 @@ bool VMParser::find_token(const string &s, size_t start,
   int first_space = s.find(" ", start);
   if (first_space < 0) {
     i = start;
-    size_t last_pos = s.size() - 1; // -1 offset for '\0'
-    while (last_pos > start && 
+    int last_pos = s.size() - 1; // -1 offset for '\0'
+    while (last_pos >= (int) start && 
         !isalnum(s[last_pos])) { // to remove special char e.g. CR
       --last_pos;
     }
-    if (i == j) {
+    if (last_pos < (int) i) {
       return false;
     } else {
       j = last_pos + 1;
       return true;
     }
-  } else if (first_space == start) {
+  } else if (first_space == (int) start) {
     int first_nonspace = s.find_first_not_of(" ", start);
     if (first_nonspace < 0) {
       return false; // terminate as only no token left
     } else {
-      while (first_nonspace > start &&
+      while (first_nonspace > (int) start &&
           !isalnum(s[first_nonspace])) {
         --first_nonspace;
       }
-      if (first_nonspace == start) {
+      if (first_nonspace == (int) start) {
         return false;
       } else {
         return find_token(s, first_nonspace, i, j);
@@ -65,7 +65,11 @@ bool VMParser::find_token(const string &s, size_t start,
     }
   } else {
     i = start;
-    j = first_space; 
+    while (first_space >= (int) start &&
+        !isalnum(s[first_space])) {
+      --first_space;
+    }
+    j = first_space + 1; 
     return true;
   }
 }
@@ -83,6 +87,7 @@ void VMParser::store_tokens(vector<string> &vs)
     size_t j = 0;
     while (find_token(j, i, j)) {
       vs.push_back(data.line.substr(i, j - i));
+      ++j;
     }
   }
 }

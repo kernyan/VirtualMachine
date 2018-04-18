@@ -301,6 +301,29 @@ void AssemblyWriter::do_comment(const ParsedData &data)
   assembly_strings.push_back(data.comment);
 }
 
+void AssemblyWriter::do_label(const ParsedData &data)
+{
+  add_line("//" + data.line);
+  add_line("(" + data.arg1 + ")");
+}
+
+void AssemblyWriter::do_goto(const ParsedData &data)
+{
+  add_line("//" + data.line);
+  add_line("@" + data.arg1);
+  add_line("0;JMP");
+}
+
+void AssemblyWriter::do_if(const ParsedData &data)
+{
+  add_line("//" + data.line);
+  add_line("@" + data.arg1);
+  add_lines_pop_sp();
+  add_line("D=M");
+  add_line("@" + data.arg1);
+  add_line("D;JNE");
+}
+
 void AssemblyWriter::write_tofile(const string &FileName)
 {
   std::ofstream outFile(FileName);
