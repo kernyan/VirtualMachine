@@ -9,7 +9,8 @@
 using std::vector;
 
 VMParser::VMParser(const string &FileName) :
-  compile_local (false)
+  argv_optimize (false),
+  argv_comments (false)
 {
   data.filename = FileName;
   size_t found = FileName.find_last_of("/");

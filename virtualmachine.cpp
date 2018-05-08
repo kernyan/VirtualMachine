@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <unistd.h>
 #include "parser.h"
 #include "assembly_writer.h"
 #include "utils.h"
@@ -8,12 +9,22 @@
 
 int main(int argc, char *argv[])
 {
-  std::ifstream in_file(argv[1]);
+  char *filename = argv[argc-1];
+  std::ifstream in_file(filename);
   if (in_file) {
-    string FileName = replace_string_to_end(argv[1], 3, ""); // remove .vm extension
+    string FileName = replace_string_to_end(filename, 3, ""); // remove .vm extension
     VMParser parser(FileName);
-    if (argv[2] && argv[2] == std::string("-l"))
-      parser.set_local_flag(); 
+    char opt;
+    while ((opt = getopt(argc, argv, "oc")) != -1) {
+      switch (opt) {
+        case 'o': parser.set_argv_optimize(); break;
+        case 'c': parser.set_argv_comments(); break;
+        default:
+          fprintf(stderr, "Usage: %s [-oc] [file...]\n", argv[0]);
+          exit(EXIT_FAILURE);
+      }
+    }
+
     AssemblyWriter writer;
     string out_file_name = replace_string_to_end(argv[1], 3, ".asm");
     string line;

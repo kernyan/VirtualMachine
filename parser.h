@@ -24,7 +24,9 @@ class VMParser
 {
   private:
   ParsedData data;
-  bool compile_local; // local unix machine has trailing /r character
+  bool argv_optimize; // command line flag -o for optimized asm
+  bool argv_comments; // command line flag -c for commented asm
+
   void set_line(const string &LineAsString);
   void remove_comment();
   void store_tokens(vector<string> &vs);
@@ -36,8 +38,11 @@ class VMParser
   explicit VMParser (const string &FileName);
   void operator()(const string &LineAsString);
   inline ParsedData get_parsed_data();
-  void set_local_flag() {
-    compile_local = true;
+  void set_argv_optimize() {
+    argv_optimize = true;
+  }
+  void set_argv_comments() {
+    argv_comments = true;
   }
   static bool find_token(const string &s,
       size_t start, size_t &i, size_t &j);
